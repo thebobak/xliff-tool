@@ -6,6 +6,7 @@ const initialState: XliffState = {
   translations: new Map(),
   isDirty: false,
   fileName: null,
+  activeTransUnitId: null,
 };
 
 function xliffReducer(state: XliffState, action: XliffAction): XliffState {
@@ -26,6 +27,7 @@ function xliffReducer(state: XliffState, action: XliffAction): XliffState {
         translations,
         isDirty: false,
         fileName: action.payload.fileName,
+        activeTransUnitId: null,
       };
     }
 
@@ -53,6 +55,12 @@ function xliffReducer(state: XliffState, action: XliffAction): XliffState {
         isDirty: false,
       };
 
+    case 'SET_ACTIVE_TRANS_UNIT':
+      return {
+        ...state,
+        activeTransUnitId: action.payload,
+      };
+
     default:
       return state;
   }
@@ -67,6 +75,7 @@ interface XliffContextValue {
   getTranslation: (transUnitId: string) => string;
   getTranslatedCount: () => number;
   getTotalCount: () => number;
+  setActiveTransUnit: (id: string | null) => void;
 }
 
 export const XliffContext = createContext<XliffContextValue | null>(null);
@@ -94,6 +103,10 @@ export function XliffProvider({ children }: XliffProviderProps) {
     dispatch({ type: 'MARK_SAVED' });
   }, []);
 
+  const setActiveTransUnit = useCallback((id: string | null) => {
+    dispatch({ type: 'SET_ACTIVE_TRANS_UNIT', payload: id });
+  }, []);
+
   const getTranslation = useCallback((transUnitId: string): string => {
     return state.translations.get(transUnitId) || '';
   }, [state.translations]);
@@ -116,7 +129,8 @@ export function XliffProvider({ children }: XliffProviderProps) {
     getTranslation,
     getTranslatedCount,
     getTotalCount,
-  }), [state, loadDocument, updateTranslation, clearDocument, markSaved, getTranslation, getTranslatedCount, getTotalCount]);
+    setActiveTransUnit,
+  }), [state, loadDocument, updateTranslation, clearDocument, markSaved, getTranslation, getTranslatedCount, getTotalCount, setActiveTransUnit]);
 
   return (
     <XliffContext.Provider value={value}>

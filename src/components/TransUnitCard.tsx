@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { forwardRef, useCallback } from 'react';
 import { TransUnit } from '../types/xliff';
 import { SourceContent } from './SourceContent';
 import { TranslationInput } from './TranslationInput';
@@ -13,15 +13,26 @@ interface TransUnitCardProps {
 
 export const TransUnitCard = forwardRef<HTMLDivElement, TransUnitCardProps>(
   function TransUnitCard({ unit, index, onNavigateNext, onNavigatePrev }, ref) {
-    const { getTranslation } = useXliff();
+    const { getTranslation, setActiveTransUnit, state } = useXliff();
     const hasTranslation = !!getTranslation(unit.id);
+    const isActive = state.activeTransUnitId === unit.id;
+
+    const handleFocus = useCallback(() => {
+      setActiveTransUnit(unit.id);
+    }, [setActiveTransUnit, unit.id]);
 
     return (
       <div
         ref={ref}
+        onClick={handleFocus}
         className={`
-          bg-white rounded-lg shadow-sm border p-4 transition-colors
-          ${hasTranslation ? 'border-green-200 bg-green-50/30' : 'border-gray-200'}
+          bg-white rounded-lg shadow-sm border p-4 transition-colors cursor-pointer
+          ${isActive
+            ? 'border-blue-500 ring-2 ring-blue-200'
+            : hasTranslation
+              ? 'border-green-200 bg-green-50/30'
+              : 'border-gray-200 hover:border-gray-300'
+          }
         `}
       >
         <div className="flex items-start justify-between mb-3">

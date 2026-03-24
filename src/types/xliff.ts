@@ -25,10 +25,12 @@ export interface XliffState {
   translations: Map<string, string>; // transUnitId -> translation text
   isDirty: boolean;
   fileName: string | null;
+  activeTransUnitId: string | null; // Currently focused trans-unit for preview sync
 }
 
 export type XliffAction =
   | { type: 'LOAD_DOCUMENT'; payload: { document: XliffDocument; fileName: string } }
   | { type: 'UPDATE_TRANSLATION'; payload: { transUnitId: string; text: string } }
   | { type: 'CLEAR_DOCUMENT' }
-  | { type: 'MARK_SAVED' };
+  | { type: 'MARK_SAVED' }
+  | { type: 'SET_ACTIVE_TRANS_UNIT'; payload: string | null };
