@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect, useRef, KeyboardEvent } from 'react';
+import { useCallback, useState, useEffect, useRef, KeyboardEvent, MouseEvent } from 'react';
 import { useXliff } from '../hooks/useXliff';
 
 interface TranslationInputProps {
@@ -12,20 +12,30 @@ export function TranslationInput({
   onNavigateNext,
   onNavigatePrev,
 }: TranslationInputProps) {
-  const { getTranslation, updateTranslation } = useXliff();
-  const [localValue, setLocalValue] = useState('');
+  const { getTranslation, updateTranslation, setActiveTransUnit } = useXliff();
+  const [localValue, setLocalValue] = useState(() => getTranslation(transUnitId));
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Sync local state with context
+  // Only sync from context when transUnitId changes (not on every render)
   useEffect(() => {
     setLocalValue(getTranslation(transUnitId));
-  }, [transUnitId, getTranslation]);
+  }, [transUnitId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setLocalValue(value);
     updateTranslation(transUnitId, value);
   }, [transUnitId, updateTranslation]);
+
+  // Stop click propagation to prevent card's onClick from firing
+  const handleClick = useCallback((e: MouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
+  // Set active on focus
+  const handleFocus = useCallback(() => {
+    setActiveTransUnit(transUnitId);
+  }, [setActiveTransUnit, transUnitId]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
     // Tab to navigate to next unit
@@ -59,6 +69,8 @@ export function TranslationInput({
         value={localValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
+        onClick={handleClick}
+        onFocus={handleFocus}
         placeholder="Enter translation..."
         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500

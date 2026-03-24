@@ -11,18 +11,26 @@ export function PreviewPanel() {
 
   // Scroll to active item when it changes
   useEffect(() => {
-    if (!state.activeTransUnitId || !containerRef.current) return;
+    const activeId = state.activeTransUnitId;
+    if (!activeId || !containerRef.current) return;
 
-    const activeElement = containerRef.current.querySelector(
-      `[data-trans-unit-id="${state.activeTransUnitId}"]`
-    );
+    // Use requestAnimationFrame to ensure DOM has updated
+    requestAnimationFrame(() => {
+      if (!containerRef.current) return;
 
-    if (activeElement) {
-      activeElement.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      });
-    }
+      // Escape special characters for CSS selector
+      const escapedId = CSS.escape(activeId);
+      const activeElement = containerRef.current.querySelector(
+        `[data-trans-unit-id="${escapedId}"]`
+      );
+
+      if (activeElement) {
+        activeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+      }
+    });
   }, [state.activeTransUnitId]);
 
   return (
