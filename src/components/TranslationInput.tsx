@@ -13,19 +13,35 @@ export function TranslationInput({
   onNavigatePrev,
 }: TranslationInputProps) {
   const { getTranslation, updateTranslation, setActiveTransUnit } = useXliff();
-  const [localValue, setLocalValue] = useState(() => getTranslation(transUnitId));
+  const contextValue = getTranslation(transUnitId);
+  const [localValue, setLocalValue] = useState(contextValue);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const isUserEditing = useRef(false);
 
-  // Only sync from context when transUnitId changes (not on every render)
+  // Sync from context when value changes externally (e.g., AI translation)
+  useEffect(() => {
+    // Only sync if user is not actively editing this field
+    if (!isUserEditing.current && contextValue !== localValue) {
+      setLocalValue(contextValue);
+    }
+  }, [contextValue]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reset local value when switching to a different trans-unit
   useEffect(() => {
     setLocalValue(getTranslation(transUnitId));
+    isUserEditing.current = false;
   }, [transUnitId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
+    isUserEditing.current = true;
     setLocalValue(value);
     updateTranslation(transUnitId, value);
   }, [transUnitId, updateTranslation]);
+
+  const handleBlur = useCallback(() => {
+    isUserEditing.current = false;
+  }, []);
 
   // Stop click propagation to prevent card's onClick from firing
   const handleClick = useCallback((e: MouseEvent) => {
@@ -71,6 +87,7 @@ export function TranslationInput({
         onKeyDown={handleKeyDown}
         onClick={handleClick}
         onFocus={handleFocus}
+        onBlur={handleBlur}
         placeholder="Enter translation..."
         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm
                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
