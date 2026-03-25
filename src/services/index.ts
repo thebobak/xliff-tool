@@ -3,3 +3,10 @@ export { exportXliff } from './xliffExporter';
 export { xliffToHtml, xliffToPlainText } from './contentRenderer';
 export { readFile, downloadFile, generateExportFilename } from './fileService';
 export { parseRuntimeData, findPreviewContent, getLessonContent } from './previewParser';
+export {
+  translateText,
+  translateBatch,
+  isTranslationConfigured,
+  getTranslationConfig,
+  LANGUAGE_OPTIONS,
+} from './translationService';

@@ -6,6 +6,7 @@ export { TranslationInput } from './TranslationInput';
 export { TransUnitCard } from './TransUnitCard';
 export { TransUnitList } from './TransUnitList';
 export { ExportButton } from './ExportButton';
+export { TranslationControls } from './TranslationControls';
 export { PreviewPanel } from './PreviewPanel';
 export { PreviewUploader } from './PreviewUploader';
 export { PreviewLesson } from './PreviewLesson';

@@ -3,6 +3,7 @@ import { PreviewProvider } from './context/PreviewContext';
 import { FileUploader } from './components/FileUploader';
 import { FileInfo } from './components/FileInfo';
 import { ExportButton } from './components/ExportButton';
+import { TranslationControls } from './components/TranslationControls';
 import { TransUnitList } from './components/TransUnitList';
 import { PreviewPanel } from './components/PreviewPanel';
 import { useXliff } from './hooks/useXliff';
@@ -49,9 +50,10 @@ function AppContent() {
       <div className="flex-1 flex overflow-hidden">
         {/* Left Panel - Translation */}
         <div className="w-1/2 flex flex-col overflow-hidden border-r border-gray-200">
-          {/* File Info & Export */}
-          <div className="flex-shrink-0 p-4 bg-white border-b border-gray-200 space-y-3">
+          {/* File Info, Translation Controls & Export */}
+          <div className="flex-shrink-0 p-4 bg-white border-b border-gray-200 space-y-3 overflow-y-auto max-h-[45vh]">
             <FileInfo />
+            <TranslationControls />
             <ExportButton />
           </div>
 
